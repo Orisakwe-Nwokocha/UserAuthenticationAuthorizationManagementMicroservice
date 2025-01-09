@@ -1,0 +1,4 @@
+task:
+  blackListedToken:
+    cleaner:
+      cron: '1 0 * * *'
