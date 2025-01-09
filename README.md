@@ -1,4 +1,4 @@
-[![Build](https://github.com/Orisakwe-Nwokocha/kafka-tutorial/actions/workflows/build.yml/badge.svg)](https://github.com/Orisakwe-Nwokocha/kafka-tutorial/actions/workflows/build)
+[//]: # ([![Build]&#40;https://github.com/Orisakwe-Nwokocha/kafka-tutorial/actions/workflows/build.yml/badge.svg&#41;]&#40;https://github.com/Orisakwe-Nwokocha/kafka-tutorial/actions/workflows/build&#41;)
 
 # Orisha User Authentication and Authorization Management System
 ## Overview
