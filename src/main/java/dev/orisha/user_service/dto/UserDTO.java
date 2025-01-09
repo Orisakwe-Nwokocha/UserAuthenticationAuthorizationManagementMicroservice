@@ -1,6 +1,8 @@
 package dev.orisha.user_service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import dev.orisha.user_service.config.CustomEmptyStringSerializer;
 import dev.orisha.user_service.data.enums.Authority;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +25,7 @@ public class UserDTO {
 
     private String email;
 
+    @JsonSerialize(using = CustomEmptyStringSerializer.class)
     private String password;
 
     private Set<Authority> authorities;
