@@ -41,7 +41,6 @@ public class SecurityConfig {
                                                    AuthenticationEntryPoint authenticationEntryPoint,
                                                    AccessDeniedHandler accessDeniedHandler ) throws Exception {
 
-        authenticationFilter.setFilterProcessesUrl("/users/api/v1/auth/login");
         final String[] publicEndpoints = PUBLIC_ENDPOINTS.toArray(new String[0]);
         return http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -53,7 +52,6 @@ public class SecurityConfig {
                 .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(publicEndpoints).permitAll()
-//                                .requestMatchers(HttpMethod.POST, "/users/api/v1/auth/login").permitAll()
 //                        .requestMatchers("/users/update").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )

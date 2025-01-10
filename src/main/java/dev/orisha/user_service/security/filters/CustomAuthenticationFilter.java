@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -29,11 +30,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Objects;
 
+import static dev.orisha.user_service.controllers.constants.ApplicationUrls.BASE_AUTH_URL;
+import static dev.orisha.user_service.controllers.constants.ApplicationUrls.LOGIN_URL;
 import static dev.orisha.user_service.handlers.constants.ErrorConstants.AUTHENTICATION_ERROR_MESSAGE;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.HOURS;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
@@ -52,11 +57,17 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         this.authenticationManager = authenticationManager;
         this.appConfig = appConfig;
         super.setAuthenticationManager(authenticationManager);
+        super.setFilterProcessesUrl("%s%s".formatted(BASE_AUTH_URL, LOGIN_URL));
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
                                                                 throws AuthenticationException {
+        if (!Objects.equals(request.getMethod(), POST.name())) {
+            AuthenticationServiceException exception = new AuthenticationServiceException("Authentication method '%s' not supported".formatted(request.getMethod()));
+            log.error(exception.getMessage(), exception);
+            throw exception;
+        }
         log.info("Starting user authentication");
         LoginRequest loginRequest;
         try(InputStream inputStream = request.getInputStream()) {
@@ -76,7 +87,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authResult = authenticationManager.authenticate(authentication);
-        SecurityContextHolder.getContext().setAuthentication(authResult);
         log.info("Retrieved the authentication result from authentication manager");
         return authResult;
     }
@@ -89,26 +99,22 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         Cookie cookie = createCookie(token);
         response.addCookie(cookie);
 
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+        log.info("User '{}' authentication successful", authResult.getName());
+
         LoginResponse loginResponse = buildLoginResponse(token);
         ApiResponse<LoginResponse> apiResponse = new ApiResponse<>(now(), true, loginResponse);
         response.setContentType(APPLICATION_JSON_VALUE);
-        String json = mapper.writeValueAsString(apiResponse);
-        System.out.println(json);
-        log.info("json: {}", json);
         response.getOutputStream().write(mapper.writeValueAsBytes(apiResponse));
         response.flushBuffer();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("successful Authentication: {}", authentication);
-        log.info("Principal: {}", authentication.getPrincipal());
-
-        log.info("User '{}' authentication successful", authResult.getName());
     }
-
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException exception) throws IOException, ServletException {
+        SecurityContextHolder.clearContext();
+        log.info("User authentication unsuccessful");
+
         ApiErrorResponse errorResponse = ApiErrorResponse.builder()
                 .responseTime(now())
                 .isSuccessful(false)
@@ -116,13 +122,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .message(exception.getMessage())
                 .path(request.getRequestURI())
                 .build();
-
         response.setStatus(SC_UNAUTHORIZED);
         response.setContentType(APPLICATION_JSON_VALUE);
         response.getOutputStream().write(mapper.writeValueAsBytes(errorResponse));
         response.getOutputStream().flush();
-
-        log.info("User authentication unsuccessful");
     }
 
     private String generateAccessToken(Authentication authResult) {
