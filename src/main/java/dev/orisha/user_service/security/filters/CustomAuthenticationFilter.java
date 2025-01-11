@@ -68,6 +68,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             log.error(exception.getMessage(), exception);
             throw exception;
         }
+
         log.info("Starting user authentication");
         LoginRequest loginRequest;
         try(InputStream inputStream = request.getInputStream()) {
@@ -80,8 +81,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             throw new AuthenticationCredentialsNotFoundException(AUTHENTICATION_ERROR_MESSAGE);
         }
 
-        /*   different implementation
-        username = loginRequest.getEmail().toLowerCase();*/
         String username = loginRequest.getEmail();
         String password = loginRequest.getPassword();
 

@@ -14,6 +14,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+//    private GlobalExceptionHandler() {}
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointerException(NullPointerException exception, HttpServletRequest request) {
@@ -101,6 +103,19 @@ public class GlobalExceptionHandler {
 
         log(METHOD_ARGUMENT_NOT_VALID, errorResponse);
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<?> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setTimestamp(now());
+        errorResponse.setStatus(SC_NOT_FOUND);
+        errorResponse.setError(NOT_FOUND.getReasonPhrase());
+        errorResponse.setDetail(ex.getMessage());
+        errorResponse.setPath(request.getRequestURI());
+
+        log(NOT_FOUND.getReasonPhrase(), errorResponse);
+        return ResponseEntity.status(NOT_FOUND).body(errorResponse);
     }
 
     private static void log(final String message, final ErrorResponse error) {

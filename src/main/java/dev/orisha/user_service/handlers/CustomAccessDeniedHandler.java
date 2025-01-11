@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static dev.orisha.user_service.handlers.constants.ErrorConstants.DEFAULT_TYPE;
-import static dev.orisha.user_service.handlers.constants.ErrorConstants.MESSAGE_KEY;
+import static dev.orisha.user_service.handlers.constants.ErrorConstants.*;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -32,6 +32,17 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+        int status = response.getStatus();
+        String contentType = response.getContentType();
+        log.info("AccessDeniedHandler - Response status: {}, Content-Type: {}", status, contentType);
+
+        boolean isResponseSet = status != SC_OK && contentType != null;
+        if (isResponseSet) {
+            log.info(HTTP_RESPONSE_ALREADY_SET);
+            response.flushBuffer();
+            return;
+        }
+
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setStatus(SC_FORBIDDEN);
 

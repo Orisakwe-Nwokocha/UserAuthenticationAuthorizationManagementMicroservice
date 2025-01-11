@@ -18,7 +18,7 @@ public class Todo {
      * TODO: MissingServletRequestParameterException handler
      * TODO: refactor integration and services tests
      * TODO: add swagger for easy api documentation
-     * TODO: path does not exist 404
+     * TODO: path does not exist 404: Done
 
      *
      *

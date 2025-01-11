@@ -13,9 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static dev.orisha.user_service.handlers.constants.ErrorConstants.DEFAULT_TYPE;
-import static dev.orisha.user_service.handlers.constants.ErrorConstants.MESSAGE_KEY;
-import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import static dev.orisha.user_service.handlers.constants.ErrorConstants.*;
+import static jakarta.servlet.http.HttpServletResponse.*;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -32,6 +31,16 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+        int status = response.getStatus();
+        String contentType = response.getContentType();
+        log.info("AuthenticationEntryPoint handler - Response status: {}, Content-Type: {}", status, contentType);
+
+        if (status != SC_OK && contentType != null) {
+            log.info(HTTP_RESPONSE_ALREADY_SET);
+            response.flushBuffer();
+            return;
+        }
+
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setStatus(SC_UNAUTHORIZED);
 

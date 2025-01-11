@@ -17,5 +17,4 @@ public final class ApplicationUrls {
 
 //    public static final String GET_USER_BY_ID_URL = "/{id}";
 
-
 }
