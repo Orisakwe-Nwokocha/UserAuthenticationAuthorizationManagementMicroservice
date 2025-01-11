@@ -2,6 +2,8 @@ package dev.orisha.user_service.handlers.constants;
 
 public final class ErrorConstants {
 
+    private ErrorConstants() {}
+
     public static final String PROBLEM_BASE_URL = "https://www.orisha.dev/problem";
     public static final String DEFAULT_TYPE = String.format("%s%s", PROBLEM_BASE_URL, "/problem-with-message");
     public static final String CONSTRAINT_VIOLATION_TYPE = String.format("%s%s", PROBLEM_BASE_URL, "/constraint-violation");
@@ -15,7 +17,5 @@ public final class ErrorConstants {
 
 //    public static final String METHOD_ARGUMENT_TYPE_MISMATCH = "Method argument type mismatch";
 //        public static final String ERR_CONCURRENCY_FAILURE = "error.concurrencyFailure";
-
-    private ErrorConstants() {}
 
 }

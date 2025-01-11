@@ -8,11 +8,14 @@ import dev.orisha.user_service.dto.requests.UserUpdateRequest;
 import dev.orisha.user_service.exceptions.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static dev.orisha.user_service.config.constants.AppConstants.USER_AUTHORITY;
 
 @Service
 @Slf4j
@@ -28,7 +31,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Secured(USER_AUTHORITY)
+//    @RolesAllowed({ADMIN_AUTHORITY})
+//    @PreAuthorize("hasAuthority('ADMIN')")
     public UserDTO update(UserUpdateRequest request) {
+
         return getUserDTOEagerly(request.getEmail())
                 .map(existingUser -> {
                     log.info("Updating existing user: {}", existingUser);
@@ -55,6 +62,14 @@ public class UserServiceImpl implements UserService {
         log.info("Trying to fetch all users");
         List<User> users = userRepository.findAll();
         return userMapper.toDtoList(users);
+
+/*        List<User> users = userRepository.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("email"), "username"));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        }); */
+
+//        List<User> users = userRepository.findAll((root, query, cb) -> cb.equal(root.get("email"), "username"), PageRequest.of());
 
     }
 

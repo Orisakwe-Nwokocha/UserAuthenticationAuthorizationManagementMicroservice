@@ -150,8 +150,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
         Set<RequestMappingInfo> requestMappingInfos = handlerMethods.keySet();
 
-        boolean isContainsRequestPath = requestMappingInfos.contains(mappingInfo);
-        if (!isContainsRequestPath) {
+        boolean isRequestPathValid = requestMappingInfos.contains(mappingInfo);
+        if (!isRequestPathValid) {
             String errorMessage = NO_STATIC_RESOURCE_PATH_FOUND.formatted(requestPath);
             log.info(errorMessage);
 
@@ -166,7 +166,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             response.setContentType(APPLICATION_JSON_VALUE);
             response.getOutputStream().write(objectMapper.writeValueAsBytes(errorResponse));
         }
-
     }
 
 }
