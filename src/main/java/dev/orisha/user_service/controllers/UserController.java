@@ -38,12 +38,14 @@ public class UserController {
 
     @PatchMapping(UPDATE_USER_URL)
     public ResponseEntity<?> updateUser(@Valid @RequestBody UserUpdateRequest request, Principal principal) {
-        String email = request.getEmail();
-        if (email == null || !email.equals(principal.getName())) {
+        log.info("REST request to update user with dto: {}", request);
+        String user = request.getEmail();
+        String authenticatedUser = principal.getName();
+        if (user == null || !user.equals(authenticatedUser)) {
+            log.error("Authenticated user '{}' is not permitted to update user '{}'", authenticatedUser, user);
             throw new AccessDeniedException(ACCESS_DENIED);
         }
 
-        log.info("REST request to update user with dto: {}", request);
         UserDTO updatedUser = userService.update(request);
         log.info("User updated: {}", updatedUser);
         return buildApiResponse(updatedUser);

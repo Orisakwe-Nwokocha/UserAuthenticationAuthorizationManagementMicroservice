@@ -63,13 +63,12 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAll();
         return userMapper.toDtoList(users);
 
-/*        List<User> users = userRepository.findAll((root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(cb.equal(root.get("email"), "username"));
-            return cb.and(predicates.toArray(new Predicate[0]));
-        }); */
-
-//        List<User> users = userRepository.findAll((root, query, cb) -> cb.equal(root.get("email"), "username"), PageRequest.of());
+//        Page<User> usesrs = userRepository.findAll((root, query, cb) -> cb.equal(root.get("email"), "username"), PageRequest.of(1, 2));
+//        List<User> userss = userRepository.findAll((root, query, cb) -> {
+//            List<Predicate> predicates = new ArrayList<>();
+//            predicates.add(cb.equal(root.get("email"), "username"));
+//            return cb.and(predicates.toArray(new Predicate[0]));
+//        });
 
     }
 

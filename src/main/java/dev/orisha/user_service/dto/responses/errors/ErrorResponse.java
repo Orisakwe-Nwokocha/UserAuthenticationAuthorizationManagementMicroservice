@@ -26,4 +26,45 @@ public class ErrorResponse {
     private String message;
     private List<FieldError> fieldErrors;
 
+//    @Override
+//    public String toString() {
+//        StringBuilder stringBuilder = new StringBuilder("ErrorResponse{");
+//        Field[] fields = this.getClass().getDeclaredFields();
+//        boolean firstField = true;
+//
+//        for (Field field : fields) {
+//            field.setAccessible(true);
+//            try {
+//                Object value = field.get(this);
+//                if (value == null) continue;
+//
+//                if (!firstField) stringBuilder.append(", ");
+//                firstField = false;
+//
+//                boolean isNumber = value instanceof Number;
+//                String valueQualifier = isNumber ? "" : "\"";
+//                stringBuilder.append("\"")
+//                        .append(field.getName())
+//                        .append("\": ")
+//                        .append(valueQualifier)
+//                        .append(value)
+//                        .append(valueQualifier);
+//            } catch (IllegalAccessException e) {
+//                throw new RuntimeException("Error accessing field: " + field.getName(), e);
+//            }
+//        }
+//
+//        return stringBuilder.append("}").toString();
+//    }
+
+
+
+    public static void main(String[] args) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setType("error");
+        errorResponse.setTitle("title");
+        System.out.println(errorResponse);
+    }
+
 }

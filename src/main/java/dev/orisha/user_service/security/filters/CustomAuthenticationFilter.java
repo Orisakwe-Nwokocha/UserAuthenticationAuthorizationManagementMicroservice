@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Objects;
 
 import static dev.orisha.user_service.controllers.constants.ApplicationUrls.BASE_AUTH_URL;
 import static dev.orisha.user_service.controllers.constants.ApplicationUrls.LOGIN_URL;
@@ -38,7 +36,6 @@ import static dev.orisha.user_service.handlers.constants.ErrorConstants.AUTHENTI
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.HOURS;
-import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
@@ -63,12 +60,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
                                                                 throws AuthenticationException {
-        if (!Objects.equals(request.getMethod(), POST.name())) {
-            AuthenticationServiceException exception = new AuthenticationServiceException("Authentication method '%s' not supported".formatted(request.getMethod()));
-            log.error(exception.getMessage(), exception);
-            throw exception;
-        }
-
         log.info("Starting user authentication");
         LoginRequest loginRequest;
         try(InputStream inputStream = request.getInputStream()) {

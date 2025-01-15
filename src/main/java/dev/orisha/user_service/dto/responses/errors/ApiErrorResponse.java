@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class ApiErrorResponse {
-    @JsonFormat(pattern = "dd-MMMM-yyyy 'at' hh:mm a")
+    @JsonFormat(pattern = "E, dd-MMMM-yyyy 'at' hh:mm a")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime responseTime;
     private boolean isSuccessful;
